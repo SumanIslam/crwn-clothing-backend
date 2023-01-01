@@ -8,8 +8,6 @@
 	"scripts": {
 		"client": "cd client && npm run start",
 		"server": "nodemon server.js",
-		"build": "cd client && npm run build",
-		"dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
 		"start": "node server.js",
 		"heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
 	},
@@ -22,8 +20,5 @@
 		"nodemon": "^2.0.20",
 		"stripe": "^8.176.0",
 		"uuid": "^8.3.2"
-	},
-	"devDependencies": {
-		"concurrently": "^4.0.1"
 	}
 }
