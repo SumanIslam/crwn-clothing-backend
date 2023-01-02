@@ -6,6 +6,7 @@ const compression = require('compression');
 const enforce = require('express-sslify');
 
 if(process.env.NODE_ENV !== 'production') require('dotenv').config();
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
@@ -42,30 +43,22 @@ app.get('/service-worker.js', (req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'build', 'service-worker.js'))
 })
 
-app.post('/payment', (req, res) => {
-  const { token, amount } = req.body;
-  const idempotencyKey = uuidv4();
-  
-  const body = {
-		amount,
-		currency: 'usd',
-		source: 'tok_mastercard',
-	};
+app.post('/payment', async (req, res) => {
+  const { amount } = req.body;
 
-  return stripe.customers
-		.create({
-			source: 'tok_mastercard',
-			email: token.email,
-		})
-		.then((customer) => {
-			console.log('hi');
-			stripe.charges.create(body, { idempotencyKey });
-		})
-		.then((result) => res.status(200).json(result))
-		.catch((err) => console.log(err));
+	try {
+		const paymentIntent = await stripe.paymentIntents.create({
+			amount,
+			currency: 'usd',
+			payment_method: 'pm_card_visa',
+		});
+		return res.status(200).json(paymentIntent);
+	} catch(err) {
+		console.log(err);
+	}
 })
 
 app.listen(port, (error) => {
   if(error) throw error;
-  console.log(`Server is running on port ${port}...`)
+  console.log(`Server is running on port ${port}...`);
 })
