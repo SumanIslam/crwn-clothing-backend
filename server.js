@@ -45,24 +45,24 @@ app.get('/service-worker.js', (req, res) => {
 app.post('/payment', (req, res) => {
   const { token, amount } = req.body;
   const idempotencyKey = uuidv4();
-
-  console.log(token, amount);
-  console.log(req.body);
   
   const body = {
-    amount,
-    currency: 'usd'
-  };
+		amount,
+		currency: 'usd',
+		source: 'tok_mastercard',
+	};
 
-  return stripe.customers.create({
-    source: token.id,
-    email: token.email,
-  })
-    .then(customer => {
-    stripe.charges.create(body, {idempotencyKey})
-  })
-    .then(result => res.status(200).json(result))
-    .catch(err => console.log(err))
+  return stripe.customers
+		.create({
+			source: 'tok_mastercard',
+			email: token.email,
+		})
+		.then((customer) => {
+			console.log('hi');
+			stripe.charges.create(body, { idempotencyKey });
+		})
+		.then((result) => res.status(200).json(result))
+		.catch((err) => console.log(err));
 })
 
 app.listen(port, (error) => {
