@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 const compression = require('compression');
 const enforce = require('express-sslify');
 
